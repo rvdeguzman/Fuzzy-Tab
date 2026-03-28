@@ -2,10 +2,29 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="popup.css">
     <script type="module" src="popup.js"></script>
 </head>
 <body>
-    <strong>Hello World!</strong>
+    <main class="palette">
+        <label class="search-field" for="tab-search">
+            <span class="search-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="5"/><path d="m11 11 3.5 3.5"/></svg>
+            </span>
+            <input id="tab-search" type="search" placeholder="Search tabs…" autocomplete="off" spellcheck="false" />
+        </label>
+
+        <p id="status" class="status" aria-live="polite">Loading tabs…</p>
+
+        <ul id="tab-results" class="results" role="listbox" aria-label="Tabs"></ul>
+
+        <footer class="hints">
+            <span class="hint"><kbd>↑↓</kbd> Navigate</span>
+            <span class="hint"><kbd>↵</kbd> Switch</span>
+            <span class="hint"><kbd>⌘⌫</kbd> Close</span>
+            <span class="hint"><kbd>esc</kbd> Dismiss</span>
+        </footer>
+    </main>
 </body>
 </html>

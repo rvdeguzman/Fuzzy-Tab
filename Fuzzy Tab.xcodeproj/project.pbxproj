@@ -53,6 +53,7 @@
 		B3913F922F7850B20080F663 /* Fuzzy TabTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Fuzzy TabTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3913F9C2F7850B20080F663 /* Fuzzy TabUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Fuzzy TabUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3913FA82F7850B20080F663 /* Fuzzy Tab Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Fuzzy Tab Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3913FD42F7A2B4F0080F663 /* uploaded_image.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = uploaded_image.icns; path = ../../Downloads/uploaded_image.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -134,6 +135,7 @@
 				B3913F952F7850B20080F663 /* Fuzzy TabTests */,
 				B3913F9F2F7850B20080F663 /* Fuzzy TabUITests */,
 				B3913FAC2F7850B20080F663 /* Fuzzy Tab Extension */,
+				B3913FD32F7A2B4F0080F663 /* Frameworks */,
 				B3913F792F7850B20080F663 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -147,6 +149,14 @@
 				B3913FA82F7850B20080F663 /* Fuzzy Tab Extension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B3913FD32F7A2B4F0080F663 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B3913FD42F7A2B4F0080F663 /* uploaded_image.icns */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -578,6 +588,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Fuzzy Tab";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -619,6 +630,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Fuzzy Tab";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;

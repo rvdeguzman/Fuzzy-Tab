@@ -3,6 +3,7 @@ const statusNode = document.querySelector("#status");
 const resultsNode = document.querySelector("#tab-results");
 
 const MAX_RESULTS = 8;
+const TAB_SNAPSHOT_KEY = "tabSnapshot";
 
 let allTabs = [];
 let filteredTabs = [];
@@ -16,8 +17,13 @@ initialize().catch((error) => {
 
 async function initialize() {
     bindEvents();
-    await loadTabs();
     searchInput.focus();
+    requestAnimationFrame(() => {
+        hydratePopup().catch((error) => {
+            console.error("Failed to hydrate popup", error);
+            statusNode.textContent = "Could not load tabs.";
+        });
+    });
 }
 
 function bindEvents() {
@@ -65,32 +71,93 @@ function bindEvents() {
     });
 }
 
-async function loadTabs() {
-    const currentWindow = await browser.windows.getCurrent();
-    currentWindowId = currentWindow?.id ?? null;
+async function hydratePopup() {
+    currentWindowId = await getCurrentWindowId();
 
-    const tabs = await browser.tabs.query({});
+    const cachedTabs = await loadCachedTabs();
+    if (cachedTabs.length > 0) {
+        applyTabs(cachedTabs);
+    }
+
+    const snapshot = await requestTabSnapshot();
+    if (snapshot.tabs.length > 0 || cachedTabs.length === 0) {
+        applyTabs(snapshot.tabs);
+    }
+
+    refreshTabsInBackground();
+}
+
+function applyTabs(tabs) {
     const orderedWindowIds = [...new Set(tabs.map((tab) => tab.windowId).filter((windowId) => typeof windowId === "number"))];
     const windowIndexById = new Map(
         orderedWindowIds.map((windowId, index) => [windowId, index + 1])
     );
 
-    allTabs = tabs
+    allTabs = tabs.map((tab) => ({
+        ...tab,
+        windowLabel: tab.windowId === currentWindowId
+            ? ""
+            : `Window ${windowIndexById.get(tab.windowId) ?? "?"}`
+    }));
+
+    renderResults(searchInput.value);
+}
+
+async function loadCachedTabs() {
+    try {
+        const stored = await browser.storage.local.get(TAB_SNAPSHOT_KEY);
+        return Array.isArray(stored?.[TAB_SNAPSHOT_KEY]) ? stored[TAB_SNAPSHOT_KEY] : [];
+    } catch {
+        return [];
+    }
+}
+
+async function requestTabSnapshot() {
+    try {
+        const response = await browser.runtime.sendMessage({ type: "get-tab-snapshot" });
+        return {
+            tabs: Array.isArray(response?.tabs) ? response.tabs : []
+        };
+    } catch {
+        return {
+            tabs: await queryTabsDirectly()
+        };
+    }
+}
+
+async function refreshTabsInBackground() {
+    try {
+        const tabs = await browser.runtime.sendMessage({ type: "refresh-tab-snapshot" });
+        if (Array.isArray(tabs)) {
+            applyTabs(tabs);
+        }
+    } catch {
+        // Keep showing the cached snapshot if the background refresh fails.
+    }
+}
+
+async function getCurrentWindowId() {
+    try {
+        const currentWindow = await browser.windows.getCurrent();
+        return currentWindow?.id ?? null;
+    } catch {
+        return null;
+    }
+}
+
+async function queryTabsDirectly() {
+    const tabs = await browser.tabs.query({});
+    return tabs
         .filter((tab) => typeof tab.id === "number" && typeof tab.windowId === "number")
         .map((tab) => ({
             id: tab.id,
             windowId: tab.windowId,
-            windowLabel: tab.windowId === currentWindowId
-                ? ""
-                : `Window ${windowIndexById.get(tab.windowId) ?? "?"}`,
             active: Boolean(tab.active),
             title: tab.title || "Untitled Tab",
             url: tab.url || "",
             hostname: getHostname(tab.url),
             favIconUrl: tab.favIconUrl || ""
         }));
-
-    renderResults("");
 }
 
 function renderResults(query) {

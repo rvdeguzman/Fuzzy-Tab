@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Fuzzy Tab is a **Safari Web Extension** for macOS that provides a fuzzy-search command palette for switching between open browser tabs. It uses keyboard shortcut `Cmd+Shift+K` to open a popup where users type to fuzzy-match tab titles, hostnames, and URLs, then navigate results with arrow keys (or Ctrl+N/Ctrl+P) and Enter. `Cmd+Backspace` closes the selected tab.
+Fuzzy Tab is a **Safari Web Extension** for macOS that provides a fuzzy-search command palette for switching between open browser tabs. It uses keyboard shortcut `Cmd+Shift+P` to open a popup where users type to fuzzy-match tab titles, hostnames, and URLs, then navigate results with arrow keys (or Ctrl+N/Ctrl+P) and Enter. `Cmd+Backspace` closes the selected tab.
 
 ## Build, Test & Validate
 
@@ -32,6 +32,7 @@ Both app and extension targets require **macOS 13.0+** (MV3 service workers need
 The project has two targets. The Xcode project uses file-system-synchronized groups, so adding/removing files on disk is enough — no pbxproj edits needed.
 
 ### `Fuzzy Tab` (macOS host app)
+
 A minimal Cocoa app that only exists to host the Safari extension. It shows a WKWebView with extension enable/disable status and a button to open Safari settings. The extension bundle identifier is `rvdeguzman.Fuzzy-Tab.Extension`.
 
 - `AppDelegate.swift` — terminates on last window close, opts into secure state restoration
@@ -39,6 +40,7 @@ A minimal Cocoa app that only exists to host the Safari extension. It shows a WK
 - `Resources/Main.html`, `Script.js`, `Style.css`, `Icon.png` — the status page UI
 
 ### `Fuzzy Tab Extension` (Safari Web Extension)
+
 Manifest V3 with `tabs` + `storage` permissions. Keep permissions to exactly that set — a Swift test enforces it.
 
 - **`fuzzy.js`** — pure matching logic as an ES module, no browser/DOM APIs (this is what the Node tests import):

@@ -6,48 +6,62 @@
 //
 
 import Cocoa
+import OSLog
 import SafariServices
 import WebKit
 
-let extensionBundleIdentifier = "rvdeguzman.Fuzzy-Tab.Extension"
-
+/// Hosts the status page that tells the user whether the Safari extension
+/// is enabled and offers a shortcut to Safari's extension settings.
 class ViewController: NSViewController, WKNavigationDelegate, WKScriptMessageHandler {
+
+    private enum Extension {
+        static let bundleIdentifier = "rvdeguzman.Fuzzy-Tab.Extension"
+    }
+
+    private enum Message {
+        static let handlerName = "controller"
+        static let openPreferences = "open-preferences"
+    }
+
+    private let logger = Logger(subsystem: "rvdeguzman.Fuzzy-Tab", category: "status-page")
 
     @IBOutlet var webView: WKWebView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.webView.navigationDelegate = self
+        webView.navigationDelegate = self
+        webView.configuration.userContentController.add(self, name: Message.handlerName)
 
-        self.webView.configuration.userContentController.add(self, name: "controller")
+        guard let pageURL = Bundle.main.url(forResource: "Main", withExtension: "html"),
+              let resourceURL = Bundle.main.resourceURL else {
+            logger.error("Status page resources are missing from the app bundle.")
+            return
+        }
 
-        self.webView.loadFileURL(Bundle.main.url(forResource: "Main", withExtension: "html")!, allowingReadAccessTo: Bundle.main.resourceURL!)
+        webView.loadFileURL(pageURL, allowingReadAccessTo: resourceURL)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        SFSafariExtensionManager.getStateOfSafariExtension(withIdentifier: extensionBundleIdentifier) { (state, error) in
-            guard let state = state, error == nil else {
-                // Insert code to inform the user that something went wrong.
+        SFSafariExtensionManager.getStateOfSafariExtension(withIdentifier: Extension.bundleIdentifier) { [weak self] state, error in
+            guard let state, error == nil else {
+                // Leave the page in its default "state unknown" copy.
+                self?.logger.error("Could not read extension state: \(error?.localizedDescription ?? "unknown error")")
                 return
             }
 
             DispatchQueue.main.async {
-                if #available(macOS 13, *) {
-                    webView.evaluateJavaScript("show(\(state.isEnabled), true)")
-                } else {
-                    webView.evaluateJavaScript("show(\(state.isEnabled), false)")
-                }
+                webView.evaluateJavaScript("show(\(state.isEnabled), true)")
             }
         }
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if (message.body as! String != "open-preferences") {
-            return;
+        guard let body = message.body as? String, body == Message.openPreferences else {
+            return
         }
 
-        SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
+        SFSafariApplication.showPreferencesForExtension(withIdentifier: Extension.bundleIdentifier) { _ in
             DispatchQueue.main.async {
                 NSApplication.shared.terminate(nil)
             }

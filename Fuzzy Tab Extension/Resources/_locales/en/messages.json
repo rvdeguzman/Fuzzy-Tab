@@ -1,10 +1,10 @@
 {
-    "extension_name": {
-        "message": "Fuzzy Tab Extension",
-        "description": "The display name for the extension."
-    },
-    "extension_description": {
-        "message": "This is Fuzzy Tab Extension. You should tell us what your extension does here.",
-        "description": "Description of what the extension does."
-    }
+  "extension_name": {
+    "message": "Fuzzy Tab",
+    "description": "The display name for the extension."
+  },
+  "extension_description": {
+    "message": "Fuzzy Tab lets you quickly find the tab (needle) in your haystack (Safari) using fuzzy search. Just type a few characters and jump to the tab you need.",
+    "description": "Description of what the extension does."
+  }
 }

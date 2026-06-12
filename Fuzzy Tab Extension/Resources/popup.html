@@ -8,20 +8,33 @@
 </head>
 <body>
     <main class="palette">
-        <label class="search-field" for="tab-search">
+        <header class="search-row">
             <span class="search-icon" aria-hidden="true">
-                <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="5"/><path d="m11 11 3.5 3.5"/></svg>
+                <svg viewBox="0 0 16 16"><circle cx="6.9" cy="6.9" r="4.6"/><path d="m10.5 10.5 3.5 3.5"/></svg>
             </span>
-            <input id="tab-search" type="search" placeholder="Search tabs…" autocomplete="off" spellcheck="false" />
-        </label>
+            <input
+                id="tab-search"
+                type="text"
+                placeholder="Search Tabs"
+                autocomplete="off"
+                autocorrect="off"
+                spellcheck="false"
+                role="combobox"
+                aria-expanded="true"
+                aria-controls="tab-results"
+                aria-autocomplete="list"
+                aria-label="Search tabs"
+            />
+        </header>
 
-        <p id="status" class="status" aria-live="polite">Loading tabs…</p>
-
-        <ul id="tab-results" class="results" role="listbox" aria-label="Tabs"></ul>
+        <section class="results-section">
+            <p id="status" class="section-header" aria-live="polite">Loading…</p>
+            <ul id="tab-results" class="results" role="listbox" aria-label="Open tabs"></ul>
+        </section>
 
         <footer class="hints">
             <span class="hint"><kbd>↑↓</kbd> Navigate</span>
-            <span class="hint"><kbd>↵</kbd> Switch</span>
+            <span class="hint"><kbd>↩</kbd> Switch</span>
             <span class="hint"><kbd>⌘⌫</kbd> Close</span>
             <span class="hint"><kbd>esc</kbd> Dismiss</span>
         </footer>

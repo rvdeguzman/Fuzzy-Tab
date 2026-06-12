@@ -4,7 +4,7 @@
     "description": "The display name for the extension."
   },
   "extension_description": {
-    "message": "Fuzzy Tab lets you quickly find the tab (needle) in your haystack (Safari) using fuzzy search. Just type a few characters and jump to the tab you need.",
+    "message": "Quickly find and switch to open Safari tabs with fuzzy search.",
     "description": "Description of what the extension does."
   }
 }

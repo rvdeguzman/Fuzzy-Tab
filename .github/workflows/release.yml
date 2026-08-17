@@ -25,6 +25,6 @@ jobs:
           echo "${{ secrets.ASC_KEY_P8 }}" | base64 --decode \
             > ~/.appstoreconnect/private_keys/AuthKey_$ASC_KEY_ID.p8
 
-      # BUILD defaults to a timestamp, which always beats whatever is already
-      # in App Store Connect. Override with `make release BUILD=n` if needed.
-      - run: make release
+      # VERSION comes from the tag (v1.0.3 → 1.0.3); BUILD is a timestamp,
+      # which always beats whatever is already in App Store Connect.
+      - run: make release VERSION=${GITHUB_REF_NAME#v}

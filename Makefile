@@ -6,6 +6,13 @@ ARCHIVE = .derived/FuzzyTab.xcarchive
 # fresh one. Passed on the command line, so no pbxproj churn per release.
 BUILD ?= $(shell date +%Y%m%d%H%M)
 
+# Version comes from the git tag (v1.0.3 → 1.0.3), so the tag is the single
+# source of truth. Falls back to the pbxproj value outside a tagged checkout.
+VERSION ?= $(shell git describe --tags --abbrev=0 --match 'v*' 2>/dev/null | sed 's/^v//')
+ifneq ($(VERSION),)
+VERSION_ARG = MARKETING_VERSION=$(VERSION)
+endif
+
 # App Store Connect API key (Users and Access → Integrations → App Store Connect API).
 ASC_KEY_PATH ?= $(HOME)/.appstoreconnect/private_keys/AuthKey_$(ASC_KEY_ID).p8
 
@@ -33,7 +40,7 @@ archive:
 	rm -rf "$(ARCHIVE)"
 	xcodebuild archive -project "$(PROJECT)" -scheme "$(SCHEME)" \
 		-archivePath "$(ARCHIVE)" -derivedDataPath .derived/archive \
-		$(AUTH) CURRENT_PROJECT_VERSION=$(BUILD)
+		$(AUTH) CURRENT_PROJECT_VERSION=$(BUILD) $(VERSION_ARG)
 
 upload:
 	xcodebuild -exportArchive -archivePath "$(ARCHIVE)" \

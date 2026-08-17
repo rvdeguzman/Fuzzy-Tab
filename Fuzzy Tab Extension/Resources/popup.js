@@ -279,13 +279,23 @@ function updateSelection() {
 }
 
 async function activateTab(tab) {
+    // Focus the window first: activating the tab makes Safari rebuild this
+    // popup, so nothing awaited after it is guaranteed to run. Window focus
+    // is best-effort and must never be mistaken for a dead tab.
     try {
-        await browser.tabs.update(tab.id, { active: true });
         await browser.windows.update(tab.windowId, { focused: true });
-        window.close();
     } catch (error) {
-        // The snapshot was stale and the tab is gone: drop it, re-render,
-        // and let the background refresh catch the list up.
+        console.warn("Failed to focus window", error);
+    }
+
+    const activated = browser.tabs.update(tab.id, { active: true });
+    window.close();
+
+    try {
+        await activated;
+    } catch (error) {
+        // Still alive, so the popup survived: the snapshot was stale and the
+        // tab is gone. Drop it, re-render, let the background refresh catch up.
         console.error("Failed to activate tab", error);
         allTabs = allTabs.filter((candidate) => candidate.id !== tab.id);
         renderResults(searchInput.value);

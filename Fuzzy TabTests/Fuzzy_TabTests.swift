@@ -84,7 +84,7 @@ struct ExtensionResourceTests {
         let execute = try #require(commands["_execute_action"] as? [String: Any])
         let keys = try #require(execute["suggested_key"] as? [String: String])
 
-        #expect(keys["mac"] == "Command+Shift+K")
+        #expect(keys["mac"] == "Command+Shift+P")
         #expect(keys["default"]?.isEmpty == false)
     }
 

@@ -9,6 +9,15 @@ BUILD ?= $(shell date +%Y%m%d%H%M)
 # App Store Connect API key (Users and Access → Integrations → App Store Connect API).
 ASC_KEY_PATH ?= $(HOME)/.appstoreconnect/private_keys/AuthKey_$(ASC_KEY_ID).p8
 
+# Only pass API-key auth when it is configured: on a dev machine Xcode's own
+# account handles signing, on CI there is no account and the key is required.
+ifneq ($(ASC_KEY_ID),)
+AUTH = -authenticationKeyPath "$(ASC_KEY_PATH)" \
+	-authenticationKeyID "$(ASC_KEY_ID)" \
+	-authenticationKeyIssuerID "$(ASC_ISSUER_ID)" \
+	-allowProvisioningUpdates
+endif
+
 .PHONY: test build archive upload release
 
 test:
@@ -24,13 +33,11 @@ archive:
 	rm -rf "$(ARCHIVE)"
 	xcodebuild archive -project "$(PROJECT)" -scheme "$(SCHEME)" \
 		-archivePath "$(ARCHIVE)" -derivedDataPath .derived/archive \
-		CURRENT_PROJECT_VERSION=$(BUILD)
+		$(AUTH) CURRENT_PROJECT_VERSION=$(BUILD)
 
 upload:
 	xcodebuild -exportArchive -archivePath "$(ARCHIVE)" \
 		-exportOptionsPlist scripts/ExportOptions.plist -exportPath .derived/export \
-		-authenticationKeyPath "$(ASC_KEY_PATH)" \
-		-authenticationKeyID "$(ASC_KEY_ID)" \
-		-authenticationKeyIssuerID "$(ASC_ISSUER_ID)"
+		$(AUTH)
 
 release: test archive upload

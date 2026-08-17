@@ -1,0 +1,30 @@
+name: Release
+
+# git tag v1.1 && git push --tags
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: macos-15
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.DIST_CERT_P12 }}
+          p12-password: ${{ secrets.CERT_PASSWORD }}
+
+      - name: Write App Store Connect API key
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "${{ secrets.ASC_KEY_P8 }}" | base64 --decode \
+            > ~/.appstoreconnect/private_keys/AuthKey_$ASC_KEY_ID.p8
+
+      # BUILD defaults to a timestamp, which always beats whatever is already
+      # in App Store Connect. Override with `make release BUILD=n` if needed.
+      - run: make release

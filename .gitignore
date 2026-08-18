@@ -23,3 +23,7 @@ Icon?
 
 # Thumbnails
 ._*
+
+# Python
+__pycache__/
+*.pyc

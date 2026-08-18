@@ -25,7 +25,10 @@ AUTH = -authenticationKeyPath "$(ASC_KEY_PATH)" \
 	-allowProvisioningUpdates
 endif
 
-.PHONY: test build archive upload release
+.PHONY: test build archive upload release submit
+
+# Release notes for `make submit`; App Store rejects an empty What's New.
+NOTES ?= Bug fixes and improvements.
 
 test:
 	node --test "tests/*.test.mjs"
@@ -48,3 +51,8 @@ upload:
 		$(AUTH)
 
 release: test archive upload
+
+# Attaches the newest build to the version record. Add SUBMIT=--submit to
+# actually start App Review.
+submit:
+	scripts/asc-submit.py "$(VERSION)" --notes "$(NOTES)" $(SUBMIT)

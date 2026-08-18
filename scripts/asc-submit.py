@@ -165,6 +165,26 @@ def set_release_notes(version: str, notes: str) -> None:
 
 
 def attach_build(version: str, build: str) -> None:
+    # Export compliance: the app ships no encryption of its own and only makes
+    # HTTPS requests, so it is exempt. Without this answer App Review refuses
+    # the version with ENTITY_ERROR.ATTRIBUTE.REQUIRED. Apple rejects a second
+    # write, so only answer when it is still unset.
+    answered = call(
+        "GET", f"/builds/{build}?fields[builds]=usesNonExemptEncryption"
+    )["data"]["attributes"]["usesNonExemptEncryption"]
+    if answered is None:
+        call(
+            "PATCH",
+            f"/builds/{build}",
+            {
+                "data": {
+                    "type": "builds",
+                    "id": build,
+                    "attributes": {"usesNonExemptEncryption": False},
+                }
+            },
+        )
+        print("export compliance answered (exempt)")
     call(
         "PATCH",
         f"/appStoreVersions/{version}/relationships/build",

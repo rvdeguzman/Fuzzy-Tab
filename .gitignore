@@ -27,3 +27,6 @@ Icon?
 # Python
 __pycache__/
 *.pyc
+
+# Local credentials
+.env

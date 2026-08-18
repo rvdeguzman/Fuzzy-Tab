@@ -13,6 +13,14 @@ ifneq ($(VERSION),)
 VERSION_ARG = MARKETING_VERSION=$(VERSION)
 endif
 
+# Local credentials (ASC_KEY_ID, ASC_ISSUER_ID); gitignored, optional on CI.
+-include .env
+# Make keeps trailing whitespace from .env verbatim, which silently corrupts
+# the key path and the xcodebuild auth flags.
+ASC_KEY_ID := $(strip $(ASC_KEY_ID))
+ASC_ISSUER_ID := $(strip $(ASC_ISSUER_ID))
+export
+
 # App Store Connect API key (Users and Access → Integrations → App Store Connect API).
 ASC_KEY_PATH ?= $(HOME)/.appstoreconnect/private_keys/AuthKey_$(ASC_KEY_ID).p8
 
